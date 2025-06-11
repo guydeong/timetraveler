@@ -22,7 +22,7 @@ app.use(cors({
 }));
 
 // Middleware to sanitize inputs to prevent injection attacks
-//app.use(mongoSanitize());
+app.use(mongoSanitize());
 
 
 const PORT = 3000;

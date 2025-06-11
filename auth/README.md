@@ -56,9 +56,7 @@ Request Body:
 Response:
 
 - 200 OK – returns { "token": "<jwt>" }
-
 - 401 Unauthorized – invalid credentials
-
 - 500 Internal Server Error – unexpected error
 
 **Get Current User Info**
