@@ -1,0 +1,21 @@
+{
+  "name": "add-two-numbers",
+  "type": "module",
+  "description": "WASM module to add two numbers using Rust and wasm-bindgen",
+  "version": "0.0.0",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/add-two-numbers"
+  },
+  "files": [
+    "add_two_numbers_bg.wasm",
+    "add_two_numbers.js",
+    "add_two_numbers.d.ts"
+  ],
+  "main": "add_two_numbers.js",
+  "types": "add_two_numbers.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}
