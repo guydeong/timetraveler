@@ -15,14 +15,18 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:4173' ],
+  origin: 'http://localhost:5173',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
 // Middleware to sanitize inputs to prevent injection attacks
-app.use(mongoSanitize());
+// app.use((req, res, next) => {
+//   if (req.body)   req.body   = mongoSanitize.sanitize(req.body);
+//   if (req.params) req.params = mongoSanitize.sanitize(req.params);
+//   next();
+// });
 
 
 const PORT = 3000;
@@ -214,3 +218,4 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
