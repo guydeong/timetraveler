@@ -1,4 +1,5 @@
-const BASE = import.meta.env.DEV ? "" : "http://18.144.2.70";
+// Use relative base so requests go via same origin (http/https)
+const BASE = "";
 
 async function handleResponse(response) {
     const contentType = response.headers.get("content-type");

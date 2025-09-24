@@ -41,8 +41,8 @@ const allowedOrigins = [
   'http://127.0.0.1:4173',
   'http://localhost',
   'http://localhost:80',
-  'http://18.144.2.70',
-  'http://18.144.2.70:80'
+  'https://timetravellerapp.com',
+  'https://www.timetravellerapp.com'
 ];
 
 app.use(cors({

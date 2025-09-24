@@ -5,7 +5,8 @@ import { useMemo, useRef, useState, useEffect } from "react";
 import Spinner from "./Spinner.jsx";
 import init, { add } from "../../public/wasm/add_two_numbers.js";
 
-const BASE = import.meta.env.DEV ? "" : "http://18.144.2.70";
+// Use relative base so it matches current origin/scheme in prod
+const BASE = "";
 
 //WASM Module Requirement
 (async () => {
@@ -173,7 +174,6 @@ export default function Plot({ ticker, onRemove, tickerError }) {
         try {
             setPlotLoading(true);
 
-            const BASE = import.meta.env.DEV ? "" : "http://18.144.2.70";
             const res = await fetch(`${BASE}/forecast/${method}/${ticker}/${steps}`);
             if (!res.ok) {
                 throw new Error(`Server error ${res.status}`);

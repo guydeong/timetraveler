@@ -13,7 +13,10 @@ origins = [
     "http://localhost",
     "http://localhost:80",
     "http://18.144.2.70",
-    "*"  # For development, allow all origins
+    "http://timetravellerapp.com",
+    "http://www.timetravellerapp.com",
+    "https://timetravellerapp.com",
+    "https://www.timetravellerapp.com"
 ]
 
 app = FastAPI()
