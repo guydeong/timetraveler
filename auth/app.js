@@ -14,8 +14,21 @@ const app = express();
 // Middleware to parse JSON bodies
 app.use(express.json());
 app.use(cookieParser());
+
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  'http://localhost:4173',
+  'http://127.0.0.1:4173',
+];
+
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like curl, server-to-server)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) !== -1) return callback(null, true);
+    return callback(new Error('CORS policy violation'));
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
@@ -124,7 +137,7 @@ app.post('/api/login', async (req, res) => {
     const token = jwt.sign({ email: user.email }, 'secret');
     res.cookie("token", token, {
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === 'production',
       sameSite: "lax",
     });
     res.status(200).json({ ok: true });
@@ -136,7 +149,7 @@ app.post('/api/login', async (req, res) => {
 app.post("/api/logout", (req, res) => {
   res.clearCookie("token", {
     httpOnly: true,
-    secure: true,
+    secure: process.env.NODE_ENV === 'production',
     sameSite: "lax",
   });
   res.status(204).end();
@@ -202,7 +215,7 @@ app.delete('/api/removeticker', verifyToken, async (req, res) => {
     await existingUser.save();
     res.status(201).json({ message: 'Ticker removed successfully' });
   } catch (error) {
-    console.log(err)
+    console.log(error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
