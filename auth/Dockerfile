@@ -1,17 +1,7 @@
-FROM node:24
-
-RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
-
-WORKDIR /home/node/app
-
-COPY --chown=node:node package*.json ./
-
-USER node
-
-RUN npm install
-
-COPY --chown=node:node . .
-
+FROM node:20-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --production
+COPY . .
 EXPOSE 3000
-
-CMD [ "node", "app.js" ]
+CMD ["node", "app.js"]

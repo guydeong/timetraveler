@@ -1,17 +1,12 @@
-FROM node:24
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
 
-RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
-
-WORKDIR /home/node/app
-
-COPY --chown=node:node package*.json .
-
-USER node
-
-RUN npm install
-
-COPY --chown=node:node . .
-
-EXPOSE 5173
-
-CMD [ "npm", "run", "dev" ]
+FROM nginx:stable-alpine
+COPY --from=builder /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]

@@ -1,0 +1,32 @@
+version: '3.8'
+services:
+  api:
+    build:
+      context: ./forecast_module
+      dockerfile: Dockerfile
+    env_file:
+      - ../.env
+    restart: unless-stopped
+    expose:
+      - "8000"
+
+  auth:
+    build:
+      context: ./auth
+      dockerfile: Dockerfile
+    env_file:
+      - ../.env
+    restart: unless-stopped
+    expose:
+      - "3000"
+
+  web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+      - auth
+    restart: unless-stopped
