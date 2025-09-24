@@ -6,6 +6,56 @@
 
 ---
 
+## Getting Started
+
+### Prerequisites
+- Docker and Docker Compose
+- Node.js (for development)
+- Python 3.x (for development)
+- AWS Account (for production deployment)
+
+### Development Setup
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/guydeong/timetraveler.git
+   cd timetraveler
+   ```
+
+2. Set up environment variables:
+   ```bash
+   cp .env.example .env
+   # Edit .env with your configuration
+   ```
+
+3. Start the development environment:
+   ```bash
+   docker-compose up -d
+   ```
+
+### Production Deployment
+1. Configure AWS credentials:
+   ```bash
+   mkdir -p aws
+   # Add your AWS credentials to aws/credentials and aws/config
+   ```
+
+2. Set up environment variables:
+   ```bash
+   cp .env.example .env
+   # Edit .env with production values
+   ```
+
+3. Deploy with production configuration:
+   ```bash
+   docker-compose -f docker-compose.prod.yml up -d --build
+   ```
+
+## Security Notes
+- Never commit the .env file or AWS credentials
+- Keep the JWT_SECRET secure and unique
+- Regularly update dependencies
+- Use strong passwords for MongoDB and Redis
+
 ## Project Structure
 
 This project consists of three core modules:

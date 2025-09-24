@@ -35,6 +35,12 @@ services:
       dockerfile: Dockerfile
     ports:
       - "80:80"
+      - "443:443"
+    env_file:
+      - .env
+    volumes:
+      - ssl_certs:/etc/letsencrypt
+      - ./aws:/root/.aws:ro  # For AWS certificate manager integration
     depends_on:
       - api
       - auth
@@ -75,3 +81,4 @@ networks:
 volumes:
   mongodb_data:
   redis_data:
+  ssl_certs:

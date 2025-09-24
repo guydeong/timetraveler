@@ -1,0 +1,31 @@
+{
+    "Comment": "Create Route 53 records for timetraveler application",
+    "Changes": [
+        {
+            "Action": "CREATE",
+            "ResourceRecordSet": {
+                "Name": "timetravellerapp.com",
+                "Type": "A",
+                "TTL": 300,
+                "ResourceRecords": [
+                    {
+                        "Value": "18.144.2.70"
+                    }
+                ]
+            }
+        },
+        {
+            "Action": "CREATE",
+            "ResourceRecordSet": {
+                "Name": "www.timetravellerapp.com",
+                "Type": "CNAME",
+                "TTL": 300,
+                "ResourceRecords": [
+                    {
+                        "Value": "timetravellerapp.com"
+                    }
+                ]
+            }
+        }
+    ]
+}

@@ -15,7 +15,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 // MongoDB Connection
-const MONGODB_URI = 'mongodb://timetraveler_admin:TimeTravel2025Secure@mongodb:27017/timetraveler?authSource=admin';
+const MONGODB_URI = process.env.MONGODB_URI;
 
 mongoose.connection.on('disconnected', () => {
   console.log('MongoDB disconnected');
@@ -85,7 +85,7 @@ const verifyToken = (req, res, next) => {
   const token = req.cookies.token;
   if (!token) return res.status(401).json({ error: "Unauthorized" });
 
-  jwt.verify(token, 'secret', (err, decoded) => {
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
     if (err) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
@@ -136,7 +136,7 @@ app.post('/api/login', async (req, res) => {
     }
 
     // Generate JWT token
-    const token = jwt.sign({ email: user.email }, 'secret', { expiresIn: '24h' });
+    const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, { expiresIn: '24h' });
     console.log('Setting cookie with token:', token);
     const isSecure = req.headers['x-forwarded-proto'] === 'https';
     console.log('Protocol:', req.headers['x-forwarded-proto'], 'Setting secure:', isSecure);
