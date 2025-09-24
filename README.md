@@ -2,6 +2,10 @@
 
 ## By Marc Luzuriaga, Pranav Kesani, Rakil Kim
 
+<img width="1917" height="1023" alt="image" src="https://github.com/user-attachments/assets/b52a3fba-4a5c-4a3a-8b4f-4b05e7a6e80c" />
+
+**Live Project Link:** https://www.timetravellerapp.com/
+
 **TimeTraveller** is a web-based application that applies time series forecasting methods to live stock data, enabling users to visualize and predict future price trends across various intervals. The system integrates secure user authentication, advanced forecasting algorithms, and a responsive frontend interface designed for real-time interaction and accessibility.
 
 ---
