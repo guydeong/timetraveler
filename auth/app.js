@@ -42,6 +42,7 @@ const allowedOrigins = [
   'http://localhost',
   'http://localhost:80',
   'http://18.144.2.70',
+  'http://18.144.2.70:80'
 ];
 
 app.use(cors({
@@ -79,6 +80,8 @@ const User = mongoose.model('User', userSchema);
 
 // Middleware for JWT validation
 const verifyToken = (req, res, next) => {
+  console.log('Cookies received:', req.cookies);
+  console.log('Headers:', req.headers);
   const token = req.cookies.token;
   if (!token) return res.status(401).json({ error: "Unauthorized" });
 
@@ -134,13 +137,17 @@ app.post('/api/login', async (req, res) => {
 
     // Generate JWT token
     const token = jwt.sign({ email: user.email }, 'secret', { expiresIn: '24h' });
+    console.log('Setting cookie with token:', token);
+    const isSecure = req.headers['x-forwarded-proto'] === 'https';
+    console.log('Protocol:', req.headers['x-forwarded-proto'], 'Setting secure:', isSecure);
     res.cookie("token", token, {
       httpOnly: true,
-      secure: true,
-      sameSite: 'none',
+      secure: isSecure,
+      sameSite: isSecure ? 'none' : 'lax',  // Use 'none' only with HTTPS, 'lax' with HTTP
       path: '/'
     });
     res.status(200).json({ ok: true });
+    console.log('Response headers:', res.getHeaders());
   } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
   }
