@@ -1,7 +1,7 @@
-from utils.sarima import arima_ols
-from utils.prophet_module import prophet_model
-from utils.ets import ets_model
-from utils.mapa import mapa_model
+from app.utils.sarima import arima_ols
+from app.utils.prophet_module import prophet_model
+from app.utils.ets import ets_model
+from app.utils.mapa import mapa_model
 import os
 from polygon import RESTClient
 from dotenv import load_dotenv

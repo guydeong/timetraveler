@@ -1,12 +1,12 @@
 from fastapi import APIRouter
-from models.detail import PriceClose, PriceOpen
-from models.error import ErrorResponse
+from app.models.detail import PriceClose, PriceOpen
+from app.models.error import ErrorResponse
 from typing import Union
-from utils.price_close import price_close
-from utils.price_open import price_open
+from app.utils.price_close import price_close
+from app.utils.price_open import price_open
 from datetime import datetime
 from enum import Enum
-from api.redis import set_detail, get_detail
+from app.api.redis import set_detail, get_detail
 import json
 
 class Frequency(str, Enum):

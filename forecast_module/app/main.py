@@ -1,18 +1,26 @@
 # main.py
 from fastapi import FastAPI
-from api import forecast, detail, redis
+from app.api import forecast, detail, redis
+from app.dependencies.redis_init import init_redis
 from fastapi.middleware.cors import CORSMiddleware
-
-app = FastAPI()
+import asyncio
 
 origins = [
     "http://localhost:5173",   # vite dev server
     "http://127.0.0.1:5173",
     "http://localhost:4173",   # vite preview / prod test
     "http://127.0.0.1:4173",
+    "http://localhost",
+    "http://localhost:80",
+    "http://18.144.2.70",
+    "*"  # For development, allow all origins
 ]
 
 app = FastAPI()
+
+@app.on_event("startup")
+async def startup_event():
+    await init_redis()
 
 app.include_router(forecast.router, prefix="/forecast", tags=["Forecast"])
 app.include_router(detail.router, prefix="/detail", tags=["Detail"])

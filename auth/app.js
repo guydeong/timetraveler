@@ -7,7 +7,6 @@ const mongoSanitize = require('express-mongo-sanitize');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 
-
 // Creating an Express application instance
 const app = express();
 
@@ -15,43 +14,57 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
+// MongoDB Connection
+const MONGODB_URI = 'mongodb://timetraveler_admin:TimeTravel2025Secure@mongodb:27017/timetraveler?authSource=admin';
+
+mongoose.connection.on('disconnected', () => {
+  console.log('MongoDB disconnected');
+});
+
+mongoose.connection.on('error', (err) => {
+  console.error('MongoDB connection error:', err);
+});
+
+mongoose.connect(MONGODB_URI)
+  .then(() => {
+    console.log('Connected to MongoDB');
+  })
+  .catch((err) => {
+    console.error('Initial MongoDB connection error:', err);
+    process.exit(1);
+  });
+
 const allowedOrigins = [
   'http://localhost:5173',
   'http://127.0.0.1:5173',
   'http://localhost:4173',
   'http://127.0.0.1:4173',
+  'http://localhost',
+  'http://localhost:80',
+  'http://18.144.2.70',
 ];
 
 app.use(cors({
-  origin: (origin, callback) => {
-    // Allow requests with no origin (like curl, server-to-server)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) !== -1) return callback(null, true);
-    return callback(new Error('CORS policy violation'));
+  origin: function(origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
 
 // Middleware to sanitize inputs to prevent injection attacks
-// app.use((req, res, next) => {
-//   if (req.body)   req.body   = mongoSanitize.sanitize(req.body);
-//   if (req.params) req.params = mongoSanitize.sanitize(req.params);
-//   next();
-// });
-
+app.use((req, res, next) => {
+  if (req.body)   req.body   = mongoSanitize.sanitize(req.body);
+  if (req.params) req.params = mongoSanitize.sanitize(req.params);
+  next();
+});
 
 const PORT = 3000;
-
-// Connect to MongoDB database
-mongoose.connect('mongodb+srv://dbuser:changeme@time-machine.12gus0l.mongodb.net/?retryWrites=true&w=majority&appName=time-machine')
-  .then(() => {
-    console.log('Connected to MongoDB');
-  })
-  .catch((error) => {
-    console.error('Error connecting to MongoDB:', error);
-  });
 
 // Define a schema for the User collection
 const userSchema = new mongoose.Schema({
@@ -66,17 +79,6 @@ const User = mongoose.model('User', userSchema);
 
 // Middleware for JWT validation
 const verifyToken = (req, res, next) => {
-  // const header = req.headers['authorization'];
-  // if (!header) {
-  //   return res.status(401).json({ error: 'Unauthorized' });
-  // }
-
-  // const parts = header.split(' ');
-  // if (parts.length !== 2 || !/^Bearer$/i.test(parts[0])) {
-  //   console.log('verifyToken: malformed Authorization header:', authHeader);
-  //   return res.status(401).json({ error: 'Unauthorized' });
-  // }
-  // const token = parts[1];
   const token = req.cookies.token;
   if (!token) return res.status(401).json({ error: "Unauthorized" });
 
@@ -88,9 +90,6 @@ const verifyToken = (req, res, next) => {
     next();
   });
 };
-
-
-
 
 // Route to register a new user
 app.post('/api/register', async (req, res) => {
@@ -134,11 +133,12 @@ app.post('/api/login', async (req, res) => {
     }
 
     // Generate JWT token
-    const token = jwt.sign({ email: user.email }, 'secret');
+    const token = jwt.sign({ email: user.email }, 'secret', { expiresIn: '24h' });
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: "lax",
+      secure: true,
+      sameSite: 'none',
+      path: '/'
     });
     res.status(200).json({ ok: true });
   } catch (error) {
@@ -149,12 +149,12 @@ app.post('/api/login', async (req, res) => {
 app.post("/api/logout", (req, res) => {
   res.clearCookie("token", {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: "lax",
+    secure: true,
+    sameSite: "none",
+    path: '/'
   });
   res.status(204).end();
 });
-
 
 // Protected route to get user details
 app.get('/api/user', verifyToken, async (req, res) => {
@@ -179,7 +179,7 @@ app.post('/api/addticker', verifyToken, async (req, res) => {
       return res.status(400).json({ error: 'Email does not exist' });
     }
 
-    // Add ticker if it doesn't already exist in the list of tickers
+    // Add ticker if it doesnt already exist in the list of tickers
     if (existingUser.tickers.indexOf(req.body.ticker) === -1) {
       existingUser.tickers.push(req.body.ticker);
     }
@@ -225,10 +225,7 @@ app.get('/', (req, res) => {
   res.send('Welcome to the Time Machine User Authentication API!');
 });
 
-
-
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
-

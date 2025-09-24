@@ -1,0 +1,77 @@
+services:
+  api:
+    build:
+      context: ./forecast_module
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    restart: unless-stopped
+    networks:
+      - app_network
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mongodb
+      - redis
+
+  auth:
+    build:
+      context: ./auth
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    restart: unless-stopped
+    networks:
+      - app_network
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongodb
+      - redis
+
+  web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+      - auth
+    networks:
+      - app_network
+    restart: unless-stopped
+
+  mongodb:
+    image: mongo:latest
+    restart: unless-stopped
+    networks:
+      - app_network
+    volumes:
+      - mongodb_data:/data/db
+      - ./mongodb-init.js:/docker-entrypoint-initdb.d/mongodb-init.js:ro
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: timetraveler_admin
+      MONGO_INITDB_ROOT_PASSWORD: TimeTravel2025Secure
+      MONGO_INITDB_DATABASE: timetraveler
+    ports:
+      - "127.0.0.1:27017:27017"
+
+  redis:
+    image: redis:latest
+    restart: unless-stopped
+    networks:
+      - app_network
+    volumes:
+      - redis_data:/data
+    ports:
+      - "127.0.0.1:6379:6379"
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+
+networks:
+  app_network:
+    driver: bridge
+
+volumes:
+  mongodb_data:
+  redis_data:

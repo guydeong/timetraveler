@@ -9,6 +9,8 @@ services:
     restart: unless-stopped
     expose:
       - "8000"
+    ports:
+      - "8000:8000"
 
   auth:
     build:
@@ -19,6 +21,8 @@ services:
     restart: unless-stopped
     expose:
       - "3000"
+    ports:
+      - "3000:3000"
 
   web:
     build:

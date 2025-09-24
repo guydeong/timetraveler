@@ -5,6 +5,8 @@ import { useMemo, useRef, useState, useEffect } from "react";
 import Spinner from "./Spinner.jsx";
 import init, { add } from "../../public/wasm/add_two_numbers.js";
 
+const BASE = import.meta.env.DEV ? "" : "http://18.144.2.70";
+
 //WASM Module Requirement
 (async () => {
   try {
@@ -109,7 +111,7 @@ export default function Plot({ ticker, onRemove, tickerError }) {
                 }
                 const historyISO = history.toISOString().slice(0, -5);
                 nowISO = nowISO.slice(0, -5);
-                const res = await fetch(`http://localhost:8000/detail/price_close/${ticker}/day/${historyISO}/${nowISO}`);
+                                const res = await fetch(`${BASE}/detail/price_close/${ticker}/day/${historyISO}/${nowISO}`);
                 if (!res.ok) {
                     throw new Error(`Server error ${res.status}`);
                 }
@@ -171,7 +173,8 @@ export default function Plot({ ticker, onRemove, tickerError }) {
         try {
             setPlotLoading(true);
 
-            const res = await fetch(`http://localhost:8000/forecast/${method}/${ticker}/${steps}`);
+            const BASE = import.meta.env.DEV ? "" : "http://18.144.2.70";
+            const res = await fetch(`${BASE}/forecast/${method}/${ticker}/${steps}`);
             if (!res.ok) {
                 throw new Error(`Server error ${res.status}`);
             }

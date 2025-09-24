@@ -1,12 +1,20 @@
 from fastapi import APIRouter
 from datetime import datetime
+import os
 import redis.asyncio as redis
 import json
 
-#TODO: Add functionality to support fetching data only needed.
+# TODO: Add functionality to support fetching data only needed.
 
 # Redis client
-r = redis.Redis(host="localhost", port=6379, db=0, decode_responses=True)
+redis_password = os.getenv("REDIS_PASSWORD", "TimeTravel2025Redis")
+r = redis.Redis(
+    host="redis",
+    port=6379,
+    db=0,
+    password=redis_password,
+    decode_responses=True
+)
 
 # Cache format for forecast: forecast:{type}:{ticker}:{steps} => JSON string
 
